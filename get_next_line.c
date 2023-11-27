@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:51:28 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/26 23:31:19 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/11/27 11:16:49 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@ char *get_next_line(int fd)
     if (lst == NULL)
         return (NULL);
     // extract from lst to line (join all the contents)
-    line = extract_just_line(&lst);
+  	extract_just_line(lst, &line);
     // clean up lst
+	clean_up_lst(&lst);
     return (line);
 }
 
@@ -53,24 +54,99 @@ void ft_read_fd(t_list **lst, int *flag, int fd)
     }
 }
 
-char *extract_just_line(t_list **lst)
+void extract_just_line(t_list *lst, char **line)
 {
-    t_list *node;
+	int i;
 
-    node = lst;
-    
+
+	if (lst == NULL)
+		return (NULL);
+	allocate_line(lst, line);
+	if (*line == NULL)
+		return(NULL);
+	i = 0;
+	while (lst)
+	{
+		while (lst->content[i] && lst->content[i] != '\n')
+		{
+			(*line)[i] = lst->content[i];
+			i++;
+		}	
+		lst = lst->next;
+	}
+	(*line)[i] = '\n';
+	(*line)[i + 1] = '\0';
+}
+
+void allocate_line(t_list *lst, char **line)
+{
+	int len;
+	int i;
+
+	len = 1;
+	i = 0;
+	while (lst)
+	{
+		while (lst->content[i])
+		{
+			if(lst->content[i] != '\n')
+				len++;
+			i++;
+		}
+		lst = lst->next;
+	}
+	*line = (char *)malloc((len + 1) * sizeof(char));
+}
+
+void clean_up_lst(t_list **lst)
+{
+	t_list *node;
+	t_list *next;
+	char *holder;
+	int i;
+	int flag;
+	int len;
+
+	
+	node = *lst;
+	flag = 0;
+	while (node && !found_new_line(*node))
+	{
+		next = node->next;
+		free(node->content);
+		free(node);
+		node = next;
+		node = node->next;
+	}
+	
+	i = 0;
+	len = 0;
+	while (node->content[i])
+	{
+		if (node->content[i] == '\n')
+			flag = 1;
+		if (flag == 1)
+			
+		i++;
+	}
 }
 
 int found_new_line(t_list *lst)
 {
     t_list *node;
+	int i;
 
+	i = 0;
     if (lst == NULL)
         return (0);
     node = get_last_node(lst);
-    if (ft_strchr(node->content, '\n') == NULL)
-        return (0);
-    return (1);
+	while (node->content[i])
+	{
+		if (node->content[i] == '\n')
+			return (1);
+		i++;
+	}
+    return (0);
 }
 
 void add_to_list(t_list **lst,char *holder, int *flag)
@@ -106,7 +182,6 @@ void add_to_list(t_list **lst,char *holder, int *flag)
 	}
 }
 
-
 t_list	*get_last_node(t_list *lst)
 {
 	t_list	*node;
@@ -121,22 +196,6 @@ t_list	*get_last_node(t_list *lst)
 	return (node);
 }
 
-char	*ft_strchr(const char *s, int c)
-{
-	unsigned char	ch;
-
-	ch = (unsigned char)c;
-	while (*s)
-	{
-		if (*s == ch)
-			return ((char *)s);
-		s++;
-	}
-	if (ch == '\0')
-		return ((char *)s);
-	return (NULL);
-}
-
 size_t	ft_strlen(const char *s)
 {
 	size_t	len;
@@ -149,41 +208,3 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-char	*ft_strdup(const char *s)
-{
-	size_t	slen;
-	size_t	i;
-	char	*p;
-
-	i = 0;
-	slen = ft_strlen(s);
-	p = (char *)malloc((slen + 1) * sizeof(char));
-	if (p == NULL)
-		return (NULL);
-	while (i < slen)
-	{
-		p[i] = s[i];
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
-}
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*new;
-	size_t	len;
-
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s2)
-		return (ft_strdup(s1));
-	if (!s1)
-		return (ft_strdup(s2));
-	len = ft_strlen(s1) + ft_strlen(s2) + 1;
-	new = (char *)malloc(len * sizeof(char));
-	if (new == NULL)
-		return (NULL);
-	ft_strlcpy(new, s1, len);
-	ft_strlcat(new, s2, len);
-	return (new);
-}
