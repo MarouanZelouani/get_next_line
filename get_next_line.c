@@ -6,11 +6,36 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:51:28 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/27 11:16:49 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/11/28 09:11:03 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 5
+#endif
+
+typedef struct s_list
+{
+	char			*content;
+	struct s_list	*next;
+}t_list;
+
+
+char *get_next_line(int fd);
+t_list *get_last_node(t_list *lst);
+void add_to_list(t_list **lst,char *holder, int *flag);
+int found_new_line(t_list *lst);
+void free_all(t_list **lst, char *holder, t_list *last_node);
+void clean_up_lst(t_list **lst);
+void allocate_line(t_list *lst, char **line);
+void extract_just_line(t_list *lst, char **line);
+void ft_read_fd(t_list **lst, int *flag, int fd);
+void	ft_lstadd_back(t_list **lst, t_list *new);
 
 char *get_next_line(int fd)
 {
@@ -39,7 +64,7 @@ void ft_read_fd(t_list **lst, int *flag, int fd)
 
     holder = (char *) malloc ((BUFFER_SIZE + 1) * sizeof(char));
     if (holder == NULL)
-        return (NULL);
+        return ;
     while (!found_new_line(*lst) && *flag != 0)
     {
         *flag = read(fd, holder, BUFFER_SIZE);
@@ -60,10 +85,10 @@ void extract_just_line(t_list *lst, char **line)
 
 
 	if (lst == NULL)
-		return (NULL);
+		return ;
 	allocate_line(lst, line);
 	if (*line == NULL)
-		return(NULL);
+		return ;
 	i = 0;
 	while (lst)
 	{
@@ -100,36 +125,80 @@ void allocate_line(t_list *lst, char **line)
 
 void clean_up_lst(t_list **lst)
 {
-	t_list *node;
-	t_list *next;
+	t_list *last_node;
+	t_list *new;
 	char *holder;
-	int i;
-	int flag;
-	int len;
-
 	
-	node = *lst;
-	flag = 0;
-	while (node && !found_new_line(*node))
-	{
-		next = node->next;
-		free(node->content);
-		free(node);
-		node = next;
-		node = node->next;
-	}
+	int i;
+	int j;
 	
 	i = 0;
-	len = 0;
-	while (node->content[i])
-	{
-		if (node->content[i] == '\n')
-			flag = 1;
-		if (flag == 1)
-			
+	holder = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	new = malloc (sizeof(t_list));
+	if (new == NULL || holder == NULL)
+		return ;
+	last_node = get_last_node(*lst);
+	while (last_node->content[i] && last_node->content[i] != '\n')
 		i++;
-	}
+	j = 0;
+	while (last_node->content[i] != '\0')
+		holder[j++] = last_node->content[i++];
+	holder[j] = '\0';
+	new->content = holder;
+	new->content = NULL;
+	free_all(lst, holder, last_node);
 }
+
+void free_all(t_list **lst, char *holder, t_list *last_node)
+{
+	//clear everything on the heap
+	t_list	*next;
+
+	while (*lst)
+	{
+		next = (*lst)->next;
+		free((*lst)->content);
+		free(*lst);
+		*lst = next;
+	}
+	*lst = NULL;
+	
+	free(holder);
+	free(last_node->content);
+	free(last_node);
+}
+// void clean_up_lst(t_list **lst)
+// {
+// 	t_list *node;
+// 	t_list *next;
+// 	char *holder;
+// 	int i;
+// 	int flag;
+// 	int len;
+
+	
+// 	node = *lst;
+// 	flag = 0;
+// 	while (node && !found_new_line(node))
+// 	{
+// 		next = node->next;
+// 		free(node->content);
+// 		free(node);
+// 		node = next;
+// 		node = node->next;
+// 	}
+	
+// 	i = 0;
+// 	len = 0;
+// 	while (node->content[i])
+// 	{
+// 		if (node->content[i] == '\n')
+// 			flag = 1;
+// 		if (flag == 1)
+			
+// 		i++;
+// 	}
+// }
 
 int found_new_line(t_list *lst)
 {
@@ -164,10 +233,7 @@ void add_to_list(t_list **lst,char *holder, int *flag)
         return ;
     i = 0;
     while (holder[i] && i < *flag)
-    {
-        new->content[i] = holder[i];
-        i++;
-    }
+        new->content[i] = holder[i++];
     new->content[i] = '\0';
 	if (*lst == NULL)
 		*lst = new;
@@ -175,14 +241,12 @@ void add_to_list(t_list **lst,char *holder, int *flag)
 	{
 		node = *lst;
 		while (node->next != NULL)
-		{
 			node = node->next;
-		}
 		node->next = new;
 	}
 }
 
-t_list	*get_last_node(t_list *lst)
+t_list *get_last_node(t_list *lst)
 {
 	t_list	*node;
 
@@ -196,15 +260,31 @@ t_list	*get_last_node(t_list *lst)
 	return (node);
 }
 
-size_t	ft_strlen(const char *s)
+void	ft_lstadd_back(t_list **lst, t_list *new)
 {
-	size_t	len;
+	t_list	*node;
 
-	len = 0;
-    if (s == NULL)
-        return (NULL);
-	while (s[len])
-		len++;
-	return (len);
+	if (new != NULL)
+	{
+		if (*lst == NULL)
+			*lst = new;
+		else
+		{
+			node = *lst;
+			while (node->next != NULL)
+			{
+				node = node->next;
+			}
+			node->next = new;
+		}
+	}
 }
+int main ()
+{
+    int fd;
+    char *line;
 
+    fd = open("text.txt", O_RDONLY);
+    line = get_next_line(fd);
+    printf("%s", line);
+}
