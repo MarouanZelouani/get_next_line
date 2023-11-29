@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:51:31 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/29 16:41:13 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/11/29 18:23:04 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,8 @@ void ft_free_list(t_list **lst, t_list *current, int op)
 	t_list *tmp;
 
 	tmp = NULL;
-	if (op == 0 && current == NULL)
+	if (!op && current == NULL)
 	{
-		printf("0\n");
     	while ((*lst) != NULL)
     	{
         	tmp = *lst;
@@ -75,9 +74,8 @@ void ft_free_list(t_list **lst, t_list *current, int op)
         	free(tmp);
     	}	
 	}
-	else if (op == 1 && current != NULL)
+	else if (op && current != NULL)
 	{
-		printf("1\n");
 		while ((*lst) != current)
     	{
         	tmp = *lst;
@@ -94,7 +92,7 @@ void ft_add_to_lst(t_list **lst, char *holder, int read_count)
     t_list *node;
     int i;
 
-    i = 0;
+    i = -1;
     new = malloc(sizeof(t_list));
     if (new == NULL)
         return ;
@@ -103,11 +101,8 @@ void ft_add_to_lst(t_list **lst, char *holder, int read_count)
     new->content[read_count] = '\0';
     if (new->content == NULL)
         return ;
-    while (holder[i] && i < read_count)
-    {
+    while (holder[++i] && i < read_count)
         new->content[i] = holder[i];
-        i++;
-    }
     if (*lst == NULL)
         *lst = new;
     else

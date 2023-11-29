@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 16:00:37 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/29 16:33:36 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/11/29 18:20:11 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,13 @@ char *get_next_line(int fd)
     if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line, 0) == -1)
         return (NULL);
     line = ft_read_fd(&lst, fd);
+	if (line != NULL)
+    {
+        //free(line);
+		return (line);
+    }
     if (lst == NULL)
         return (NULL);
-	if (line != NULL)
-		return (line);
     line = ft_extract_line_fd(lst);
     ft_clear_all_fd(&lst);
     return (line);
@@ -71,16 +74,9 @@ char *ft_extract_line_fd(t_list *lst)
     {
         i = 0;
         while (lst->content[i] && lst->content[i] != '\n')
-        {
-            line[j] = lst->content[i];
-            i++;
-            j++;
-        }
+            line[j++] = lst->content[i++];
         if (lst->content[i] == '\n')
-        {
-            line[j] = '\n';
-            j++;
-        }
+            line[j++] = '\n';
         lst = lst->next;
     }
     line[j] = '\0';
@@ -133,11 +129,7 @@ void ft_clear_all_fd(t_list **lst)
         return ;
     len = 0;
     while (holder[i])
-    {
-        new_content[len] = holder[i];
-        len++;
-        i++;
-    }
+        new_content[len++] = holder[i++];
     new_content[len] = '\0';
     free(current->content);
     current->content = new_content;

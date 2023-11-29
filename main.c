@@ -33,30 +33,37 @@ int main ()
 
     char *line = get_next_line(fd);
     printf("%s", line);
-    free(line);
 
     char *line1 = get_next_line(fd);
     printf("%s", line1);
-    free(line1);
 
     char *line2 = get_next_line(fd);
     printf("%s", line2);
-    free(line2);
 
     char *line3 = get_next_line(fd);
     printf("%s", line3);
-    free(line3);
 
     char *line4 = get_next_line(fd);
     printf("%s", line4);
-    free(line4);
 
 
     char *line5 = get_next_line(fd);
     printf("%s", line5);
-    free(line5);
+    
+    char *line6 = get_next_line(fd);
+    printf("%s", line6);
+    char *line7 = get_next_line(fd);
+    printf("%s", line7);
     
 
+    free(line);
+    free(line1);
+    free(line2);
+    free(line3);
+    free(line4);
+    free(line5);
+    free(line6);
+    free(line7);
     printf("--------------------------------------------\n");
     //clearing the list
     // ft_clear_all_fd(&head);
