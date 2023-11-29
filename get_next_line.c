@@ -5,286 +5,141 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/26 22:51:28 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/28 09:11:03 by mzelouan         ###   ########.fr       */
+/*   Created: 2023/11/29 16:00:37 by mzelouan          #+#    #+#             */
+/*   Updated: 2023/11/29 16:33:36 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#ifndef BUFFER_SIZE
-#define BUFFER_SIZE 5
-#endif
-
-typedef struct s_list
-{
-	char			*content;
-	struct s_list	*next;
-}t_list;
-
-
-char *get_next_line(int fd);
-t_list *get_last_node(t_list *lst);
-void add_to_list(t_list **lst,char *holder, int *flag);
-int found_new_line(t_list *lst);
-void free_all(t_list **lst, char *holder, t_list *last_node);
-void clean_up_lst(t_list **lst);
-void allocate_line(t_list *lst, char **line);
-void extract_just_line(t_list *lst, char **line);
-void ft_read_fd(t_list **lst, int *flag, int fd);
-void	ft_lstadd_back(t_list **lst, t_list *new);
+#include "get_next_line.h"
 
 char *get_next_line(int fd)
 {
-    static t_list   *lst;
-    char            *line;
-    int             flag;
+    static t_list *lst; 
+    char *line;
 
-    lst = NULL;
     line = NULL;
-    if (fd < 0 || BUFFER_SIZE <= 0 || read (fd, line, 0) == -1)
+    if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line, 0) == -1)
         return (NULL);
-    // read from fd and add to lst
-    ft_read_fd(&lst, &flag, fd);
+    line = ft_read_fd(&lst, fd);
     if (lst == NULL)
         return (NULL);
-    // extract from lst to line (join all the contents)
-  	extract_just_line(lst, &line);
-    // clean up lst
-	clean_up_lst(&lst);
+	if (line != NULL)
+		return (line);
+    line = ft_extract_line_fd(lst);
+    ft_clear_all_fd(&lst);
     return (line);
 }
 
-void ft_read_fd(t_list **lst, int *flag, int fd)
+char *ft_read_fd(t_list **lst, int fd)
 {
     char *holder;
-
-    holder = (char *) malloc ((BUFFER_SIZE + 1) * sizeof(char));
-    if (holder == NULL)
-        return ;
-    while (!found_new_line(*lst) && *flag != 0)
-    {
-        *flag = read(fd, holder, BUFFER_SIZE);
-        if (*flag == -1 || (*flag == 0 && *lst == NULL))
-        {
-            free(holder);
-            return ;
-        }
-        holder[*flag] = '\0';
-        add_to_list(lst, holder, flag);
-        free(holder);
-    }
-}
-
-void extract_just_line(t_list *lst, char **line)
-{
-	int i;
-
-
-	if (lst == NULL)
-		return ;
-	allocate_line(lst, line);
-	if (*line == NULL)
-		return ;
-	i = 0;
-	while (lst)
-	{
-		while (lst->content[i] && lst->content[i] != '\n')
-		{
-			(*line)[i] = lst->content[i];
-			i++;
-		}	
-		lst = lst->next;
-	}
-	(*line)[i] = '\n';
-	(*line)[i + 1] = '\0';
-}
-
-void allocate_line(t_list *lst, char **line)
-{
-	int len;
-	int i;
-
-	len = 1;
-	i = 0;
-	while (lst)
-	{
-		while (lst->content[i])
-		{
-			if(lst->content[i] != '\n')
-				len++;
-			i++;
-		}
-		lst = lst->next;
-	}
-	*line = (char *)malloc((len + 1) * sizeof(char));
-}
-
-void clean_up_lst(t_list **lst)
-{
-	t_list *last_node;
-	t_list *new;
-	char *holder;
-	
-	int i;
-	int j;
-	
-	i = 0;
-	holder = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	new = malloc (sizeof(t_list));
-	if (new == NULL || holder == NULL)
-		return ;
-	last_node = get_last_node(*lst);
-	while (last_node->content[i] && last_node->content[i] != '\n')
-		i++;
-	j = 0;
-	while (last_node->content[i] != '\0')
-		holder[j++] = last_node->content[i++];
-	holder[j] = '\0';
-	new->content = holder;
-	new->content = NULL;
-	free_all(lst, holder, last_node);
-}
-
-void free_all(t_list **lst, char *holder, t_list *last_node)
-{
-	//clear everything on the heap
-	t_list	*next;
-
-	while (*lst)
-	{
-		next = (*lst)->next;
-		free((*lst)->content);
-		free(*lst);
-		*lst = next;
-	}
-	*lst = NULL;
-	
-	free(holder);
-	free(last_node->content);
-	free(last_node);
-}
-// void clean_up_lst(t_list **lst)
-// {
-// 	t_list *node;
-// 	t_list *next;
-// 	char *holder;
-// 	int i;
-// 	int flag;
-// 	int len;
-
-	
-// 	node = *lst;
-// 	flag = 0;
-// 	while (node && !found_new_line(node))
-// 	{
-// 		next = node->next;
-// 		free(node->content);
-// 		free(node);
-// 		node = next;
-// 		node = node->next;
-// 	}
-	
-// 	i = 0;
-// 	len = 0;
-// 	while (node->content[i])
-// 	{
-// 		if (node->content[i] == '\n')
-// 			flag = 1;
-// 		if (flag == 1)
-			
-// 		i++;
-// 	}
-// }
-
-int found_new_line(t_list *lst)
-{
-    t_list *node;
-	int i;
-
-	i = 0;
-    if (lst == NULL)
-        return (0);
-    node = get_last_node(lst);
-	while (node->content[i])
-	{
-		if (node->content[i] == '\n')
-			return (1);
-		i++;
-	}
-    return (0);
-}
-
-void add_to_list(t_list **lst,char *holder, int *flag)
-{
-    t_list *new;
-    t_list	*node;
-    int i;
-
-    new = (t_list *)malloc(sizeof(t_list));
-    if (new == NULL)
-        return ;
-    new->next == NULL;
-    new->content = (char *)malloc((*flag + 1) * sizeof(char));
-    if (new->content == NULL)
-        return ;
-    i = 0;
-    while (holder[i] && i < *flag)
-        new->content[i] = holder[i++];
-    new->content[i] = '\0';
-	if (*lst == NULL)
-		*lst = new;
-	else
-	{
-		node = *lst;
-		while (node->next != NULL)
-			node = node->next;
-		node->next = new;
-	}
-}
-
-t_list *get_last_node(t_list *lst)
-{
-	t_list	*node;
-
-	node = NULL;
-	while (lst)
-	{
-		if (lst->next == NULL)
-			node = lst;
-		lst = lst->next;
-	}
-	return (node);
-}
-
-void	ft_lstadd_back(t_list **lst, t_list *new)
-{
-	t_list	*node;
-
-	if (new != NULL)
-	{
-		if (*lst == NULL)
-			*lst = new;
-		else
-		{
-			node = *lst;
-			while (node->next != NULL)
-			{
-				node = node->next;
-			}
-			node->next = new;
-		}
-	}
-}
-int main ()
-{
-    int fd;
+    int read_count;
     char *line;
 
-    fd = open("text.txt", O_RDONLY);
-    line = get_next_line(fd);
-    printf("%s", line);
+    line = NULL;
+    holder = malloc((BUFFER_SIZE + 1) * sizeof(char));
+    if (holder == NULL)
+        return (NULL);
+    while (!found_newline(*lst))
+    {
+        read_count = read(fd, holder, BUFFER_SIZE);
+        if (!read_count)
+        {
+            free(holder);
+            line = ft_extract_line_fd(*lst);
+			ft_free_list(lst, NULL, 0);
+			return (line);
+        }
+        holder[read_count] = '\0';
+        ft_add_to_lst(lst, holder, read_count);
+    }
+    free(holder);
+	return (NULL);
+}
+
+char *ft_extract_line_fd(t_list *lst)
+{
+    char *line;
+    int i;
+    int j;
+
+    ft_allocat_line(lst, &line);
+    if (line == NULL)
+        return (NULL);
+    j = 0;
+    while (lst)
+    {
+        i = 0;
+        while (lst->content[i] && lst->content[i] != '\n')
+        {
+            line[j] = lst->content[i];
+            i++;
+            j++;
+        }
+        if (lst->content[i] == '\n')
+        {
+            line[j] = '\n';
+            j++;
+        }
+        lst = lst->next;
+    }
+    line[j] = '\0';
+    return (line);
+}
+
+void ft_allocat_line(t_list *lst, char **line)
+{
+    int i;
+    int len;
+
+    i = 0;
+    len = 0;
+    while (lst)
+    {
+        while (lst->content[i] && lst->content[i] != '\n')
+        {
+            len++;
+            i++;
+        }
+        if (lst->content[i] == '\n')
+        {
+            len++;
+            break ;
+        }
+        lst = lst->next;
+        i = 0;
+    }
+    *line = malloc((len + 1) * sizeof(char));
+}
+
+void ft_clear_all_fd(t_list **lst)
+{
+    t_list  *current;
+    char    *holder;
+    char    *new_content;
+    int     i;
+    int     len;
+
+    current = ft_get_last_node(*lst);
+    holder = current->content;
+    i = 0;
+    while (holder[i] && holder[i] != '\n')
+        i++;
+    if (holder[i] && holder[i] == '\n')
+        i++;
+    len = ft_strlen(holder + i);
+    new_content = malloc((len + 1) * sizeof(char));
+    if (new_content == NULL)
+        return ;
+    len = 0;
+    while (holder[i])
+    {
+        new_content[len] = holder[i];
+        len++;
+        i++;
+    }
+    new_content[len] = '\0';
+    free(current->content);
+    current->content = new_content;
+	ft_free_list(lst, current, 1);
 }

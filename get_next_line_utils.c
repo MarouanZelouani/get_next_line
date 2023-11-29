@@ -6,34 +6,115 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:51:31 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/28 05:10:58 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:41:13 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-// search for a new line character inside a node content
-
-// create a new node
-
-// add a node in the back of the linked list
-void	ft_lstadd_back(t_list **lst, t_list *new)
+t_list *ft_get_last_node(t_list *lst)
 {
-	t_list	*node;
+    t_list	*node;
 
-	if (new != NULL)
+	node = NULL;
+    if (lst == NULL)
+        return (NULL);
+	while (lst)
 	{
-		if (*lst == NULL)
-			*lst = new;
-		else
-		{
-			node = *lst;
-			while (node->next != NULL)
-			{
-				node = node->next;
-			}
-			node->next = new;
-		}
+		if (lst->next == NULL)
+			node = lst;
+		lst = lst->next;
+	}
+	return (node);
+}
+
+int found_newline(t_list *lst)
+{
+    int i;
+    t_list *node;
+    i = 0;
+
+    node = NULL;
+    if (lst == NULL)
+        return (0);
+    node = ft_get_last_node(lst);
+    while (node->content[i])
+    {
+        if (node->content[i] == '\n')
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	len;
+
+    if (!s)
+        return (0);
+	len = 0;
+	while (s[len])
+		len++;
+	return (len);
+}
+
+void ft_free_list(t_list **lst, t_list *current, int op)
+{
+	t_list *tmp;
+
+	tmp = NULL;
+	if (op == 0 && current == NULL)
+	{
+		printf("0\n");
+    	while ((*lst) != NULL)
+    	{
+        	tmp = *lst;
+        	*lst = (*lst)->next;
+        	free(tmp->content);
+        	free(tmp);
+    	}	
+	}
+	else if (op == 1 && current != NULL)
+	{
+		printf("1\n");
+		while ((*lst) != current)
+    	{
+        	tmp = *lst;
+        	*lst = (*lst)->next;
+        	free(tmp->content);
+        	free(tmp);
+    	}
 	}
 }
 
+void ft_add_to_lst(t_list **lst, char *holder, int read_count)
+{
+    t_list *new;
+    t_list *node;
+    int i;
+
+    i = 0;
+    new = malloc(sizeof(t_list));
+    if (new == NULL)
+        return ;
+    new->next = NULL;
+    new->content = malloc ((read_count + 1) * sizeof(char));
+    new->content[read_count] = '\0';
+    if (new->content == NULL)
+        return ;
+    while (holder[i] && i < read_count)
+    {
+        new->content[i] = holder[i];
+        i++;
+    }
+    if (*lst == NULL)
+        *lst = new;
+    else
+    {
+        node = *lst;
+        while (node->next != NULL)
+            node = node->next;
+        node->next = new;
+    }
+}
