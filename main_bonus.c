@@ -27,44 +27,51 @@ int main ()
     // head = node1;
 
     int fd = open("text.txt", O_RDONLY);
-    int fd1 = open("text1.txt", O_RDONLY);
     // ft_read_fd(&head, fd);
     // char *line = ft_extract_line_fd(head);
     
-
+    printf("LINE 1 : ");
     char *line = get_next_line(fd);
     printf("%s", line);
 
-    char *line1 = get_next_line(fd1);
+    printf("LINE 2 : ");
+    char *line1 = get_next_line(fd);
     printf("%s", line1);
 
+    printf("LINE 3 : ");
     char *line2 = get_next_line(fd);
     printf("%s", line2);
 
-    char *line3 = get_next_line(fd1);
+    printf("LINE 4 : ");
+    char *line3 = get_next_line(fd);
     printf("%s", line3);
 
-    // char *line4 = get_next_line(fd);
-    // printf("%s", line4);
 
+    printf("LINE 5 : ");
+    char *line4 = get_next_line(fd);
+    printf("%s", line4);
 
-    // char *line5 = get_next_line(fd);
-    // printf("%s", line5);
+    printf("LINE 6 : ");
+    char *line5 = get_next_line(fd);
+    printf("%s", line5);
     
-    // char *line6 = get_next_line(fd);
-    // printf("%s", line6);
-    // char *line7 = get_next_line(fd);
-    // printf("%s", line7);
+    printf("LINE 7 : ");
+    char *line6 = get_next_line(fd);
+    printf("%s", line6);
+
+    printf("LINE 8 : ");
+    char *line7 = get_next_line(fd);
+    printf("%s", line7);
     
 
     free(line);
     free(line1);
     free(line2);
     free(line3);
-    // free(line4);
-    // free(line5);
-    // free(line6);
-    // free(line7);
+    free(line4);
+    free(line5);
+    free(line6);
+    free(line7);
     printf("--------------------------------------------\n");
     //clearing the list
     // ft_clear_all_fd(&head);

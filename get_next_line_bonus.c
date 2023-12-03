@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 12:38:51 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/12/01 14:55:15 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/12/03 20:50:57 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,28 +20,19 @@ char *get_next_line(int fd)
     char *line;
 
     lst = list_of_lst[fd];
-    // if (lst == NULL)
-    //     printf("\nnull\n");
-    // else 
-    //     printf("\n-_-\n"); 
-    //printf("%s", lst->content);
     line = NULL;
     if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line, 0) == -1)
         return (NULL);
     line = ft_read_fd(&lst, fd);
 	if (line != NULL)
     {
-        //free(line);
-		return (line);
+        list_of_lst[fd] = lst;
+        return (line);
     }
     if (lst == NULL)
         return (NULL);
     line = ft_extract_line_fd(lst);
     ft_clear_all_fd(&lst);
-    // if (lst == NULL)
-    //     printf("\nnull\n");
-    // else 
-    //     printf("\n-_-\n");
     list_of_lst[fd] = lst;
     return (line);
 }
