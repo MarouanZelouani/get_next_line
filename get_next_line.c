@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 16:00:37 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/29 18:20:11 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/12/04 04:20:20 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,44 +20,57 @@ char *get_next_line(int fd)
     line = NULL;
     if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line, 0) == -1)
         return (NULL);
-    line = ft_read_fd(&lst, fd);
-	if (line != NULL)
-    {
-        //free(line);
-		return (line);
-    }
+    // line = ft_read_fd(&lst, fd);
+    ft_read_fd(&lst, fd);
+	// if (line != NULL)
+    // {
+    //     //free(line);
+    //     printf("LINE : %s\n", line);
+	// 	return (line);
+    // }
     if (lst == NULL)
         return (NULL);
     line = ft_extract_line_fd(lst);
+
     ft_clear_all_fd(&lst);
+    if (line[0] == '\0')
+	{
+		ft_free_list(&lst, NULL, 0);
+		lst = NULL;
+		free(line);
+		return (NULL);
+	}
     return (line);
 }
 
-char *ft_read_fd(t_list **lst, int fd)
+void    ft_read_fd(t_list **lst, int fd)
 {
     char *holder;
     int read_count;
-    char *line;
+    //char *line;
 
-    line = NULL;
+    // line = NULL;
     holder = malloc((BUFFER_SIZE + 1) * sizeof(char));
     if (holder == NULL)
-        return (NULL);
+        return ;
     while (!found_newline(*lst))
     {
         read_count = read(fd, holder, BUFFER_SIZE);
         if (!read_count)
         {
+            // printf("maro\n");
             free(holder);
-            line = ft_extract_line_fd(*lst);
-			ft_free_list(lst, NULL, 0);
-			return (line);
+            // line = ft_extract_line_fd(*lst);
+			// ft_free_list(lst, NULL, 0);
+			// return (line);
+            // return (NULL);
+            return ;
         }
         holder[read_count] = '\0';
         ft_add_to_lst(lst, holder, read_count);
     }
     free(holder);
-	return (NULL);
+	// return (NULL);
 }
 
 char *ft_extract_line_fd(t_list *lst)
@@ -65,7 +78,9 @@ char *ft_extract_line_fd(t_list *lst)
     char *line;
     int i;
     int j;
-
+    
+    if (lst == NULL)
+        return (NULL);
     ft_allocat_line(lst, &line);
     if (line == NULL)
         return (NULL);
@@ -88,22 +103,21 @@ void ft_allocat_line(t_list *lst, char **line)
     int i;
     int len;
 
-    i = 0;
     len = 0;
     while (lst)
     {
-        while (lst->content[i] && lst->content[i] != '\n')
-        {
-            len++;
-            i++;
-        }
-        if (lst->content[i] == '\n')
-        {
-            len++;
-            break ;
-        }
-        lst = lst->next;
         i = 0;
+        while (lst->content[i])
+		{
+			if (lst->content[i] == '\n')
+			{
+				len++;
+				break ;
+			}
+			len++;
+			i++;
+		}
+        lst = lst->next;
     }
     *line = malloc((len + 1) * sizeof(char));
 }

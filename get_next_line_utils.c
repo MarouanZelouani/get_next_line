@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 22:51:31 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/11/29 18:23:04 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/12/04 02:18:28 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@ t_list *ft_get_last_node(t_list *lst)
 
 	node = NULL;
     if (lst == NULL)
+    {        
         return (NULL);
+    }
 	while (lst)
 	{
 		if (lst->next == NULL)
@@ -51,9 +53,11 @@ size_t	ft_strlen(const char *s)
 {
 	size_t	len;
 
-    if (!s)
-        return (0);
 	len = 0;
+    if (s == NULL)
+    {
+        return (0);
+    }
 	while (s[len])
 		len++;
 	return (len);

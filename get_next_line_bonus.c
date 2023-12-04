@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 12:38:51 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/12/03 20:50:57 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/12/04 05:11:31 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,45 +23,51 @@ char *get_next_line(int fd)
     line = NULL;
     if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line, 0) == -1)
         return (NULL);
-    line = ft_read_fd(&lst, fd);
-	if (line != NULL)
-    {
-        list_of_lst[fd] = lst;
-        return (line);
-    }
+    ft_read_fd(&lst, fd);
+	// if (line != NULL)
+    // {
+    //     list_of_lst[fd] = lst;
+    //     return (line);
+    // }
     if (lst == NULL)
         return (NULL);
     line = ft_extract_line_fd(lst);
+    if (line[0] == '\0')
+	{
+		ft_free_list(&lst, NULL, 0);
+		lst = NULL;
+		free(line);
+        list_of_lst[fd] = lst;
+		return (NULL);
+	}
     ft_clear_all_fd(&lst);
     list_of_lst[fd] = lst;
     return (line);
 }
 
-char *ft_read_fd(t_list **lst, int fd)
+void ft_read_fd(t_list **lst, int fd)
 {
     char *holder;
     int read_count;
-    char *line;
+    //char *line;
 
-    line = NULL;
+    //line = NULL;
     holder = malloc((BUFFER_SIZE + 1) * sizeof(char));
     if (holder == NULL)
-        return (NULL);
+        return ;
     while (!found_newline(*lst))
     {
         read_count = read(fd, holder, BUFFER_SIZE);
         if (!read_count)
         {
             free(holder);
-            line = ft_extract_line_fd(*lst);
-			ft_free_list(lst, NULL, 0);
-			return (line);
+			return ;
         }
         holder[read_count] = '\0';
         ft_add_to_lst(lst, holder, read_count);
     }
     free(holder);
-	return (NULL);
+	// return (NULL);
 }
 
 char *ft_extract_line_fd(t_list *lst)

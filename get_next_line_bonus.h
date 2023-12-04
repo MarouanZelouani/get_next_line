@@ -6,7 +6,7 @@
 /*   By: mzelouan <mzelouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 13:39:16 by mzelouan          #+#    #+#             */
-/*   Updated: 2023/12/01 14:14:41 by mzelouan         ###   ########.fr       */
+/*   Updated: 2023/12/04 05:10:16 by mzelouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef struct s_list
 } t_list;
 
 char *get_next_line(int fd);
-char * ft_read_fd(t_list **lst, int fd);
+void ft_read_fd(t_list **lst, int fd);
 char *ft_extract_line_fd(t_list *lst);
 void ft_clear_all_fd(t_list **lst);
 void ft_add_to_lst(t_list **lst, char *holder, int read_cout);

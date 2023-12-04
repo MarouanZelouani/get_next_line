@@ -32,39 +32,39 @@ int main ()
     
 
     char *line = get_next_line(fd);
-    printf("%s", line);
+    printf("LINE 1 : %s", line);
 
     char *line1 = get_next_line(fd);
-    printf("%s", line1);
+    printf("LINE 2 : %s", line1);
 
-    char *line2 = get_next_line(fd);
-    printf("%s", line2);
+    // char *line2 = get_next_line(fd);
+    // printf("LINE 3 : %s", line2);
 
-    char *line3 = get_next_line(fd);
-    printf("%s", line3);
+    // char *line3 = get_next_line(fd);
+    // printf("%s", line3);
 
-    char *line4 = get_next_line(fd);
-    printf("%s", line4);
+    // char *line4 = get_next_line(fd);
+    // printf("%s", line4);
 
 
-    char *line5 = get_next_line(fd);
-    printf("%s", line5);
+    // char *line5 = get_next_line(fd);
+    // printf("%s", line5);
     
-    char *line6 = get_next_line(fd);
-    printf("%s", line6);
-    char *line7 = get_next_line(fd);
-    printf("%s", line7);
+    // char *line6 = get_next_line(fd);
+    // printf("%s", line6);
+    // char *line7 = get_next_line(fd);
+    // printf("%s", line7);
     
 
     free(line);
     free(line1);
-    free(line2);
-    free(line3);
-    free(line4);
-    free(line5);
-    free(line6);
-    free(line7);
-    printf("--------------------------------------------\n");
+    // free(line2);
+    // free(line3);
+    // free(line4);
+    // free(line5);
+    // free(line6);
+    // free(line7);
+    // printf("--------------------------------------------\n");
     //clearing the list
     // ft_clear_all_fd(&head);
     // if (head != NULL)
