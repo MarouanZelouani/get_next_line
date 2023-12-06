@@ -17,7 +17,7 @@ char	*ft_strchr(const char *s, int c)
 	unsigned char	ch;
 
 	ch = (unsigned char)c;
-    if (!s)
+    if (s == NULL)
 	{
         return (NULL);
 	}
@@ -65,7 +65,7 @@ size_t	ft_strlen(const char *s)
 	size_t	len;
 
 	len = 0;
-    if (!s)
+    if (s == NULL)
 	{
         return (0);
 	}

@@ -34,6 +34,7 @@ void read_line_fd(char **stash, int fd)
         {
             free(holder);
             free(*stash);
+            *stash = NULL;
             return ;
         }
         holder[read_count] = '\0';
@@ -49,7 +50,7 @@ char *extract_line(char *stash)
 
     line = NULL;
     i = 0;
-    if (!ft_strlen(stash))
+    if (!stash  || !ft_strlen(stash))
 		return (NULL);
     while (stash[i] && stash[i] != '\n')
         i++;
@@ -126,6 +127,7 @@ char *get_next_line(int fd)
     if (line == NULL)
     {
         free(stash);
+        stash = NULL;
         return (NULL);
     }
     stash = clean_stash(stash);

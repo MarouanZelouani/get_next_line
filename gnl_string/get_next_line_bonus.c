@@ -24,9 +24,16 @@ void read_line_fd(char **stash, int fd)
         if (holder == NULL)
             return ;
         read_count = read(fd, holder, BUFFER_SIZE);
-        if (read_count <= 0)
+        if (read_count == 0)
         {
             free(holder);
+            return ;
+        }
+        if (read_count == -1)
+        {
+            free(holder);
+            free(*stash);
+            *stash = NULL;
             return ;
         }
         holder[read_count] = '\0';
@@ -42,6 +49,8 @@ char *extract_line(char *stash)
 
     line = NULL;
     i = 0;
+    if (stash == NULL)
+        return (NULL);
     if (!ft_strlen(stash))
 		return (NULL);
     while (stash[i] && stash[i] != '\n')
@@ -99,7 +108,7 @@ char *get_next_line(int fd)
         return (NULL);
     // 1 == read line from fd
     read_line_fd(&stash[fd], fd);
-    if (stash == NULL)
+    if (stash[fd] == NULL)
         return(NULL);
     // 2 == extract line
     line = extract_line(stash[fd]);
@@ -114,6 +123,7 @@ char *get_next_line(int fd)
     if (line == NULL)
     {
         free(stash[fd]);
+        stash[fd] = NULL;
         return (NULL);
     }
     stash[fd] = clean_stash(stash[fd]);
